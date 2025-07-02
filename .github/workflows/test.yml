@@ -1,0 +1,39 @@
+name: Vérification Exercice
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloner le repo
+        uses: actions/checkout@v3
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Installer Playwright
+        run: npm install -D playwright
+
+      - name: Installer les dépendances de test
+        run: |
+          npm init -y
+          npm install -D @playwright/test
+
+      - name: Créer test.js
+        run: |
+          mkdir tests
+          echo "const { test, expect } = require('@playwright/test');" >> tests/exo.spec.js
+          echo "test('test DOM', async ({ page }) => {" >> tests/exo.spec.js
+          echo "  await page.goto('file://' + process.cwd() + '/index.html');" >> tests/exo.spec.js
+          echo "  const btn = await page.locator('#clickme');" >> tests/exo.spec.js
+          echo "  await btn.click();" >> tests/exo.spec.js
+          echo "  // Ici, tu peux simuler ou capturer console.log si besoin" >> tests/exo.spec.js
+          echo "});" >> tests/exo.spec.js
+
+      - name: Lancer le test
+        run: npx playwright test
