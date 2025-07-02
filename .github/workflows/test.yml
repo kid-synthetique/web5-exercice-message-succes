@@ -1,4 +1,4 @@
-name: Vérification Exercice
+name: Vérification Exercice DOM
 
 on:
   push:
@@ -7,8 +7,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Cloner le repo
+      - name: Cloner le dépôt
         uses: actions/checkout@v3
 
       - name: Installer Node.js
@@ -16,24 +17,29 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Installer Playwright
-        run: npm install -D playwright
-
-      - name: Installer les dépendances de test
+      - name: Installer les dépendances
         run: |
           npm init -y
-          npm install -D @playwright/test
+          npm install -D playwright http-server
 
-      - name: Créer test.js
+      - name: Installer les navigateurs Playwright
+        run: npx playwright install
+
+      - name: Lancer serveur local
+        run: |
+          npx http-server -p 8080 -c-1 &
+          sleep 2
+
+      - name: Créer le test
         run: |
           mkdir tests
-          echo "const { test, expect } = require('@playwright/test');" >> tests/exo.spec.js
-          echo "test('test DOM', async ({ page }) => {" >> tests/exo.spec.js
-          echo "  await page.goto('file://' + process.cwd() + '/index.html');" >> tests/exo.spec.js
-          echo "  const btn = await page.locator('#clickme');" >> tests/exo.spec.js
+          echo "const { test, expect } = require('@playwright/test');" > tests/exo.spec.js
+          echo "test('Le bouton existe et peut être cliqué', async ({ page }) => {" >> tests/exo.spec.js
+          echo "  await page.goto('http://localhost:8080');" >> tests/exo.spec.js
+          echo "  const btn = page.locator('#clickme');" >> tests/exo.spec.js
+          echo "  await expect(btn).toHaveCount(1);" >> tests/exo.spec.js
           echo "  await btn.click();" >> tests/exo.spec.js
-          echo "  // Ici, tu peux simuler ou capturer console.log si besoin" >> tests/exo.spec.js
           echo "});" >> tests/exo.spec.js
 
       - name: Lancer le test
-        run: npx playwright test
+        run: npx playwright test || (echo "::error::Le test a échoué." && exit 1)
