@@ -2,14 +2,30 @@ body {
   font-family: sans-serif;
 }
 
+code{
+  background-color: #d8d8e0;
+  padding: 0.2em;
+}
+
+blockquote{
+  background-color: rgb(255, 251, 212);
+  padding: 2em;
+  margin: 2em 0;
+}
+
 #clickme {
   display:block;
   padding: 20px 50px;
-  background-color: #2b00ff;
+  background-color: #ff003a;
+  border: none;
   border-radius: 5px;
-  border: 1px solid #110067;
   color:white;
+  font-size: 2em;
   cursor: pointer;
+}
+
+#clickme:hover {
+  background-color: #ff547c;
 }
 
 .success-msg {
