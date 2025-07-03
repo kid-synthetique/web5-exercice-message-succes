@@ -33,15 +33,60 @@ jobs:
       - name: Créer le test
         run: |
           mkdir tests
-          echo "const { test, expect } = require('@playwright/test');" > tests/exo.spec.js
-          echo "test('Le bouton déclenche un message Bravo', async ({ page }) => {" >> tests/exo.spec.js
-          echo "  await page.goto('http://localhost:8080');" >> tests/exo.spec.js
-          echo "  const btn = page.locator('#clickme');" >> tests/exo.spec.js
-          echo "  await expect(btn).toHaveCount(1);" >> tests/exo.spec.js
-          echo "  await btn.click();" >> tests/exo.spec.js
-          echo "  const bravo = page.locator('text=Bravo!');" >> tests/exo.spec.js
-          echo "  await expect(bravo).toHaveCount(1);" >> tests/exo.spec.js
-          echo "});" >> tests/exo.spec.js
+          cat << 'EOF' > tests/exo.spec.js
+          const { test, expect } = require('@playwright/test');
+          const fs = require('fs');
+          const path = require('path');
+
+          test('Exercice DOM complet avec transition et suppression', async ({ page }) => {
+            let statut = '✅ Test réussi';
+            try {
+              await page.goto('http://localhost:8080');
+
+              const btn = page.locator('#clickme');
+              await expect(btn, '❌ Le bouton #clickme est introuvable.').toHaveCount(1);
+
+              await btn.click();
+
+              const msg = page.locator('.contenu >> text=Bravo!');
+              await expect(msg, '❌ Le message "Bravo!" n\'est pas ajouté dans le <div>.contenu.').toHaveCount(1);
+
+              await expect(msg, '❌ La couleur de fond du message n\'est pas verte.').toHaveCSS('background-color', 'rgb(0, 128, 0)');
+
+              await expect(msg, '❌ La classe "success-msg" n\'est pas appliquée.').toHaveClass(/success-msg/);
+
+              const transition = await msg.evaluate(el => getComputedStyle(el).transition);
+              if (!transition.includes('1s')) {
+                throw new Error('❌ La transition CSS attendue (1s) n’est pas définie dans ".success-msg".');
+              }
+
+              // Attendre un peu plus que le timeout pour détecter fade-out
+              await page.waitForTimeout(3100);
+
+              const hasFadeOut = await msg.evaluate(el => el.classList.contains('fade-out'));
+              if (!hasFadeOut) {
+                throw new Error('❌ La classe "fade-out" n\'est pas appliquée après 3 secondes.');
+              }
+
+              await page.waitForTimeout(1100); // attendre fin transition
+
+              await expect(msg, '❌ Le message "Bravo!" ne disparaît pas après la transition.').toHaveCount(0);
+
+              console.log('✅ Test complété avec succès.');
+
+            } catch (err) {
+              statut = err.message;
+              console.error(err.message);
+              throw err;
+            } finally {
+              fs.writeFileSync(path.join(process.cwd(), 'résultat.txt'), statut);
+            }
+          });
+          EOF
 
       - name: Lancer le test
         run: npx playwright test || (echo "::error::Le test a échoué." && exit 1)
+
+      - name: Afficher le résultat du test
+        if: always()
+        run: cat résultat.txt || echo "❌ résultat.txt non trouvé."

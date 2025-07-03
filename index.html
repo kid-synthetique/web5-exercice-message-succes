@@ -1,13 +1,89 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <title>Exercice DOM</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <h1>Exercice DOM</h1>
+  <h2>🎯 Objectifs de l’exercice</h2>
+  <p>On veut afficher un message de succès temporaire — comme sur un vrai site web — qui disparaît
+    <strong>progressivement</strong> après 3 secondes. Pour cela, on utilise <code>setTimeout()</code> et une
+    <strong>transition CSS</strong> sur l’opacité.
+  </p>
+
+  <h2>🎨 Instructions CSS</h2>
+  <p>Dans le fichier <code>style.css</code>, modifiez
+    ou créez la classe <code>.success-msg</code> pour qu'elle :</p>
+  <ul>
+    <li>
+      ait une <code>transition</code> de <strong>1 seconde sur l’opacité</strong>.
+    </li>
+    <li>
+     ait une opacité initiale de <code>1</code>.
+      
+    </li>
+  </ul>
+  <p>Ajoutez aussi une classe <code>.fade-out</code>
+    avec :</p>
+  <ul>
+    <li>
+      <code>opacity: 0;</code>
+    </li>
+  </ul>
+  <blockquote>
+    💡 La transition entre <code>.success-msg</code> et <code>.fade-out</code> rendra l’effet
+      fluide.
+  </blockquote>
+
+  <h2>💻 Instructions JavaScript</h2>
+  <p>Lorsque l’on clique sur le bouton <code>"Clique-moi"</code> :</p>
+  <ol>
+    <li>
+      Créez un <strong>nouveau paragraphe (<code>&lt;p&gt;</code>)</strong> contenant le texte <code>"Bravo!"</code>
+    </li>
+    <li>
+      Ajoutez ce paragraphe <strong>dans le <code>&lt;div&gt;</code> ayant la classe <code>.contenu</code></strong>
+    </li>
+    <li>
+      Appliquez à ce paragraphe :
+      <ul>
+        <li>
+          une couleur de fond verte,
+        </li>
+        <li>
+          la classe <code>.success-msg</code>
+        </li>
+        <li>
+          une opacité initiale de <code>1</code> (peut être via CSS ou JS)
+        </li>
+      </ul>
+    </li>
+    <li>
+      <strong>Après 3 secondes</strong>, ajoutez-lui la classe <code>.fade-out</code> (il commencera à disparaître). Utilisez la méthode <code>setTimeout()</code> pour cela.
+    </li>
+    <li>
+      <strong>Lorsque la transition est terminée</strong>, supprimez le paragraphe du DOM
+    </li>
+  </ol>
+
+  <blockquote>
+    💡 Il existe un événement nommé <code>transitionend</code> qui est activé lorsque la transition CSS est terminée.
+  </blockquote>
+
+        
+
+  <br><br>
+  <div class="contenu"> </div>
   <button id="clickme">Clique-moi</button>
+
+
+
+  
   <script src="script.js"></script>
 </body>
+
 </html>

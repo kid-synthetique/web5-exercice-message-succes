@@ -1,3 +1,19 @@
 body {
   font-family: sans-serif;
 }
+
+#clickme {
+  display:block;
+  padding: 20px 50px;
+  background-color: #2b00ff;
+  border-radius: 5px;
+  border: 1px solid #110067;
+  color:white;
+  cursor: pointer;
+}
+
+.success-msg {
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+}
