@@ -30,24 +30,41 @@ jobs:
           npx http-server -p 8080 -c-1 &
           sleep 2
 
-      - name: Créer le test
+      - name: Créer le test avancé
         run: |
           mkdir tests
           echo "const fs = require('fs');" > tests/exo.spec.js
+          echo "const path = require('path');" >> tests/exo.spec.js
           echo "const { test, expect } = require('@playwright/test');" >> tests/exo.spec.js
-          echo "test('Le bouton déclenche un message Bravo', async ({ page }) => {" >> tests/exo.spec.js
+          echo "test('Exercice DOM complet avec transition et suppression', async ({ page }) => {" >> tests/exo.spec.js
+          echo "  let statut = '✅ Test réussi';" >> tests/exo.spec.js
           echo "  try {" >> tests/exo.spec.js
           echo "    await page.goto('http://localhost:8080');" >> tests/exo.spec.js
           echo "    const btn = page.locator('#clickme');" >> tests/exo.spec.js
-          echo "    await expect(btn).toHaveCount(1);" >> tests/exo.spec.js
+          echo "    await expect(btn, '❌ Le bouton #clickme est introuvable.').toHaveCount(1);" >> tests/exo.spec.js
           echo "    await btn.click();" >> tests/exo.spec.js
-          echo "    const bravo = page.locator('text=Bravo!');" >> tests/exo.spec.js
-          echo "    await expect(bravo).toHaveCount(1);" >> tests/exo.spec.js
-          echo "    fs.writeFileSync('resultat.txt', '✅ Test réussi');" >> tests/exo.spec.js
-          echo "  } catch (error) {" >> tests/exo.spec.js
-          echo "    console.error('❌ Erreur de test:', error);" >> tests/exo.spec.js
-          echo "    fs.writeFileSync('resultat.txt', '❌ Le test a échoué');" >> tests/exo.spec.js
-          echo "    throw error;" >> tests/exo.spec.js
+          echo "    const msg = page.locator('.contenu >> text=Bravo!');" >> tests/exo.spec.js
+          echo "    await expect(msg, '❌ Le message \"Bravo!\" n\\'est pas ajouté dans le <div>.contenu.').toHaveCount(1);" >> tests/exo.spec.js
+          echo "    await expect(msg, '❌ La couleur de fond du message n\\'est pas verte.').toHaveCSS('background-color', 'rgb(0, 128, 0)');" >> tests/exo.spec.js
+          echo "    await expect(msg, '❌ La classe \"success-msg\" n\\'est pas appliquée.').toHaveClass(/success-msg/);" >> tests/exo.spec.js
+          echo "    const transition = await msg.evaluate(el => getComputedStyle(el).transition);" >> tests/exo.spec.js
+          echo "    if (!transition.includes('1s')) {" >> tests/exo.spec.js
+          echo "      throw new Error('❌ La transition CSS attendue (1s) n’est pas définie dans \".success-msg\".');" >> tests/exo.spec.js
+          echo "    }" >> tests/exo.spec.js
+          echo "    await page.waitForTimeout(3100);" >> tests/exo.spec.js
+          echo "    const hasFadeOut = await msg.evaluate(el => el.classList.contains('fade-out'));" >> tests/exo.spec.js
+          echo "    if (!hasFadeOut) {" >> tests/exo.spec.js
+          echo "      throw new Error('❌ La classe \"fade-out\" n\\'est pas appliquée après 3 secondes.');" >> tests/exo.spec.js
+          echo "    }" >> tests/exo.spec.js
+          echo "    await page.waitForTimeout(1100);" >> tests/exo.spec.js
+          echo "    await expect(msg, '❌ Le message \"Bravo!\" ne disparaît pas après la transition.').toHaveCount(0);" >> tests/exo.spec.js
+          echo "    console.log('✅ Test complété avec succès.');" >> tests/exo.spec.js
+          echo "  } catch (err) {" >> tests/exo.spec.js
+          echo "    statut = err.message;" >> tests/exo.spec.js
+          echo "    console.error(err.message);" >> tests/exo.spec.js
+          echo "    throw err;" >> tests/exo.spec.js
+          echo "  } finally {" >> tests/exo.spec.js
+          echo "    fs.writeFileSync(path.join(process.cwd(), 'resultat.txt'), statut);" >> tests/exo.spec.js
           echo "  }" >> tests/exo.spec.js
           echo "});" >> tests/exo.spec.js
 
@@ -62,10 +79,11 @@ jobs:
           echo "![Statut du test](https://github.com/${{ github.repository }}/actions/workflows/test.yml/badge.svg)" >> README.md
 
       - name: Ajouter et pousser resultat.txt et README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add resultat.txt README.md
-          git commit -m "Ajout automatique du resultat et du badge"
-          git push
-        continue-on-error: true
+          git add resultat.txt README.md || true
+          git commit -m "Ajout automatique du résultat et du badge" || true
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git || true
