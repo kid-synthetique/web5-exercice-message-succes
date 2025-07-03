@@ -20,7 +20,7 @@ jobs:
       - name: Installer les dépendances
         run: |
           npm init -y
-          npm install -D playwright http-server
+          npm install -D playwright http-server @playwright/test
 
       - name: Installer les navigateurs Playwright
         run: npx playwright install
