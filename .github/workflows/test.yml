@@ -57,6 +57,8 @@ jobs:
       - name: Ajouter le badge dans README.md
         run: |
           echo "" >> README.md
+          echo "## Statut du test" >> README.md
+          echo "" >> README.md
           echo "![Statut du test](https://github.com/${{ github.repository }}/actions/workflows/test.yml/badge.svg)" >> README.md
 
       - name: Ajouter et pousser resultat.txt et README.md
