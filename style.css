@@ -17,8 +17,11 @@ body {
   background-color: #ff547c;
 }
 
+/* Instructions : Voir les instructions dans le README.md */
+
 .success-msg {
   font-weight: bold;
   padding: 10px;
   border-radius: 5px;
 }
+
