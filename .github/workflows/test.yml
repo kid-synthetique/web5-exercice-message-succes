@@ -72,6 +72,7 @@ jobs:
         run: npx playwright test || (echo "::error::Le test a échoué." && exit 1)
 
       - name: Ajouter le badge dans README.md
+        if: always()
         run: |
           echo "" >> README.md
           echo "## Statut du test" >> README.md
@@ -79,6 +80,7 @@ jobs:
           echo "![Statut du test](https://github.com/${{ github.repository }}/actions/workflows/test.yml/badge.svg)" >> README.md
 
       - name: Ajouter et pousser resultat.txt et README.md
+        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -87,3 +89,4 @@ jobs:
           git add resultat.txt README.md || true
           git commit -m "Ajout automatique du résultat et du badge" || true
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git || true
+
