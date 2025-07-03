@@ -43,8 +43,8 @@ jobs:
           echo "    const btn = page.locator('#clickme');" >> tests/exo.spec.js
           echo "    await expect(btn, '❌ Le bouton #clickme est introuvable.').toHaveCount(1);" >> tests/exo.spec.js
           echo "    await btn.click();" >> tests/exo.spec.js
-          echo "    const msg = page.locator('.contenu >> text=Bravo!');" >> tests/exo.spec.js
-          echo "    await expect(msg, '❌ Le message \"Bravo!\" n\\'est pas ajouté dans le <div>.contenu.').toHaveCount(1);" >> tests/exo.spec.js
+          echo "    const msg = page.locator('.container >> text=Bravo!');" >> tests/exo.spec.js
+          echo "    await expect(msg, '❌ Le message \"Bravo!\" n\\'est pas ajouté dans le <div>.container.').toHaveCount(1);" >> tests/exo.spec.js
           echo "    await expect(msg, '❌ La couleur de fond du message n\\'est pas verte.').toHaveCSS('background-color', 'rgb(0, 128, 0)');" >> tests/exo.spec.js
           echo "    await expect(msg, '❌ La classe \"success-msg\" n\\'est pas appliquée.').toHaveClass(/success-msg/);" >> tests/exo.spec.js
           echo "    const transition = await msg.evaluate(el => getComputedStyle(el).transition);" >> tests/exo.spec.js
@@ -74,10 +74,13 @@ jobs:
       - name: Ajouter le badge dans README.md
         if: always()
         run: |
+          # Supprimer section précédente si elle existe
+          sed -i '/## Statut du test/,$d' README.md
           echo "" >> README.md
           echo "## Statut du test" >> README.md
           echo "" >> README.md
           echo "![Statut du test](https://github.com/${{ github.repository }}/actions/workflows/test.yml/badge.svg)" >> README.md
+
 
       - name: Ajouter et pousser resultat.txt et README.md
         if: always()
