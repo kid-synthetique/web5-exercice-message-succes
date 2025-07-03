@@ -34,11 +34,13 @@ jobs:
         run: |
           mkdir tests
           echo "const { test, expect } = require('@playwright/test');" > tests/exo.spec.js
-          echo "test('Le bouton existe et peut être cliqué', async ({ page }) => {" >> tests/exo.spec.js
+          echo "test('Le bouton déclenche un message Bravo', async ({ page }) => {" >> tests/exo.spec.js
           echo "  await page.goto('http://localhost:8080');" >> tests/exo.spec.js
           echo "  const btn = page.locator('#clickme');" >> tests/exo.spec.js
           echo "  await expect(btn).toHaveCount(1);" >> tests/exo.spec.js
           echo "  await btn.click();" >> tests/exo.spec.js
+          echo "  const bravo = page.locator('text=Bravo!');" >> tests/exo.spec.js
+          echo "  await expect(bravo).toHaveCount(1);" >> tests/exo.spec.js
           echo "});" >> tests/exo.spec.js
 
       - name: Lancer le test
